@@ -54,7 +54,7 @@ namespace DataMartFasta.ETL
         {
             foreach (var inventarioPorDia in inventariosPorDia)
             {
-                this.InsertOne(inventarioPorDia));
+                this.InsertOne(inventarioPorDia);
                 this.Current++;
             }
             this.OnProgressChange?.Invoke();
