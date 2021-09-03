@@ -25,21 +25,11 @@ namespace DataMartFasta.Views
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainWindow()
+        internal MainWindow(DataWarehouse dataWarehouse)
         {
             InitializeComponent();
 
-            var connectionStringFaverino = "Data Source=localhost\\SQLEXPRESS;Initial Catalog=faverino;User ID=sa;Password=sa";
-            var connectionFaverino = new SqlConnection(connectionStringFaverino);
 
-            var connectionStringDatamart = "Data Source=localhost\\SQLEXPRESS;Initial Catalog=faverino_datamart;User ID=sa;Password=sa";
-            var connectionDatamart = new SqlConnection(connectionStringDatamart);
-
-            var compiler = new SqlServerCompiler();
-            var dbFaverino = new QueryFactory(connectionFaverino, compiler);
-            var dbDatamart = new QueryFactory(connectionDatamart, compiler);
-
-            var dataWarehouse = new DataWarehouse(dbFaverino, dbDatamart);
 
             this.stockControl.DataContext = new StockViewModel(dataWarehouse);
             this.despachosControl.DataContext = new DespachosViewModel(dataWarehouse);

@@ -69,7 +69,7 @@ namespace DataMartFasta.ETL
 
         private void InsertOne(dynamic despacho)
         {
-            this.dw.DataMart("stock").Insert(new
+            this.dw.DataMart("despachos").Insert(new
             {
                 despacho_idext = (int)despacho.despacho_id,
                 cantidad = despacho.cantidad,
