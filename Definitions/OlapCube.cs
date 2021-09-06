@@ -33,7 +33,7 @@ namespace DataMartFasta.Definitions
                 .WithAttribute("volumen");
 
             var dimPlazosEntrega = DimensionTable.Make("dim_plazos_entrega", "Plazos de entrega", IconChar.HourglassHalf)
-                .WithAttribute("descripcion")
+                .WithAttribute("descripcion", "Plazo de entrega")
                 .WithAttribute("horas");
 
             var dimHora = DimensionTable.Make("dim_minutos", "Hora", IconChar.Clock)
@@ -43,12 +43,12 @@ namespace DataMartFasta.Definitions
                 .WithAttribute("minuto_numero");
 
             var dimSucursales = DimensionTable.Make("dim_sucursales", "Sucursales", IconChar.MapMarkerAlt)
-                .WithAttribute("descripcion")
+                .WithAttribute("descripcion", "Nombre sucursal")
                 .WithAttribute("domicilio")
                 .WithAttribute("es_deposito_central");
 
             var dimTiposComprobante = DimensionTable.Make("dim_tipos_comprobante", "Tipos Comprobante", IconChar.HandPaper)
-                .WithAttribute("descripcion");
+                .WithAttribute("descripcion", "Tipo de comprobante");
 
             var dimTransportes = DimensionTable.Make("dim_transportes", "Transportes", IconChar.Truck)
                 .WithAttribute("nombre_transportista")

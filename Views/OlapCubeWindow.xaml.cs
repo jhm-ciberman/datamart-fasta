@@ -95,5 +95,21 @@ namespace DataMartFasta.Views
                 this.RefreshQuery();
             }
         }
+
+        private void MenuItemOpenETLWindow_Click(object sender, RoutedEventArgs e)
+        {
+            var window = new MainETLWindow(App.DataWarehouse);
+            window.Show();
+        }
+
+        private void MenuItemExit_Click(object sender, RoutedEventArgs e)
+        {
+            App.Current.Shutdown();
+        }
+
+        private void MenuItemRefreshQuery_Click(object sender, RoutedEventArgs e)
+        {
+            this.RefreshQuery();
+        }
     }
 }

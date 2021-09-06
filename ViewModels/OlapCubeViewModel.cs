@@ -20,10 +20,9 @@ namespace DataMartFasta.ViewModels
         private FactTableViewModel selectedfactTable;
         public FactTableViewModel SelectedFactTable { get => this.selectedfactTable; set => this.SetProperty(ref this.selectedfactTable, value, true); }
 
-        private IList<dynamic> queryResults = new List<dynamic>();
-        public IList<dynamic> QueryResults { get => this.queryResults; set => this.SetProperty(ref this.queryResults, value); }
-
         public IRelayCommand PerformQueryCommand { get; }
+
+        public IRelayCommand AddConditionCommand { get; }
 
         private QueryFactory dw;
 
@@ -33,7 +32,7 @@ namespace DataMartFasta.ViewModels
 
             foreach (var fact in olapCube.FactTables)
             {
-                this.FactTablesList.Add(new FactTableViewModel(fact));
+                this.FactTablesList.Add(new FactTableViewModel(this.dw, fact));
             }
 
             this.PerformQueryCommand = new RelayCommand(this.PerformQuery, () => this.SelectedFactTable != null);
@@ -43,7 +42,7 @@ namespace DataMartFasta.ViewModels
 
         protected void PerformQuery()
         {
-            this.QueryResults = this.SelectedFactTable.PerformQuery(this.dw).ToList();
+            this.SelectedFactTable.PerformQuery();
         }
     }
 }

@@ -23,13 +23,11 @@ namespace DataMartFasta.Views
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainETLWindow : Window
     {
-        internal MainWindow(DataWarehouse dataWarehouse)
+        internal MainETLWindow(DataWarehouse dataWarehouse)
         {
             InitializeComponent();
-
-
 
             this.stockControl.DataContext = new StockViewModel(dataWarehouse);
             this.despachosControl.DataContext = new DespachosViewModel(dataWarehouse);

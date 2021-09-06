@@ -8,8 +8,22 @@
         mc:Ignorable="d"
         Title="OlapCubeWindow" Height="450" Width="800" Background="White">
     <DockPanel LastChildFill="True">
-
-        <DockPanel>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="Archivo">
+                <MenuItem Header="Refrescar consulta" Click="MenuItemRefreshQuery_Click"/>
+                <Separator/>
+                <MenuItem Header="Abrir ventana de ETL" Click="MenuItemOpenETLWindow_Click"/>
+                <MenuItem Header="Salir" Click="MenuItemExit_Click"/>
+            </MenuItem>
+        </Menu>
+        
+        <StatusBar DockPanel.Dock="Bottom" Padding="3">
+            <StatusBarItem>
+                <TextBlock Text="{Binding SelectedFactTable.QueryStatus}"/>
+            </StatusBarItem>
+        </StatusBar>
+        
+        <DockPanel DockPanel.Dock="Left">
             <ComboBox DockPanel.Dock="Top" Margin="5" FontSize="14" ItemsSource="{Binding FactTablesList}" SelectedItem="{Binding SelectedFactTable}"/>
 
 
@@ -61,7 +75,10 @@
 
            
         </DockPanel>
-        <DataGrid Name="dataGrid" ItemsSource="{Binding QueryResults}" IsReadOnly="True">
+
+        <local:ConditionListView DockPanel.Dock="Top"/>
+
+        <DataGrid Name="dataGrid" Margin="5" ItemsSource="{Binding SelectedFactTable.QueryResults}" IsReadOnly="True">
             <DataGrid.Resources>
                 <ContextMenu x:Key="HeaderContextMenu">
                     <MenuItem Command="{Binding HideCommand}" Header="Ocultar columna"/>
@@ -73,5 +90,6 @@
                 </Style>
             </DataGrid.ColumnHeaderStyle>
         </DataGrid>
+
     </DockPanel>
 </Window>

@@ -20,17 +20,14 @@ namespace DataMartFasta
     /// </summary>
     public partial class App : Application
     {
+        internal static DataWarehouse DataWarehouse { get; private set; }
+
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
 
-            var connectionStringFaverino = "Data Source=localhost\\SQLEXPRESS;Initial Catalog=faverino;User ID=sa;Password=sa";
-            var connectionFaverino = new SqlConnection(connectionStringFaverino);
-
-            //var connectionStringDatamart = "Data Source=CIBERMAN-PC;Initial Catalog=faverino_datamart;User ID=javier;Password=javier";
-
-            var connectionStringDatamart = "Data Source = CIBERMAN-PC; Integrated Security = SSPI; Initial Catalog = faverino_datamart";
-            var connectionDatamart = new SqlConnection(connectionStringDatamart);
+            var connectionFaverino = new SqlConnection(Config.ConnectionStringFaverino);
+            var connectionDatamart = new SqlConnection(Config.ConnectionStringDatamart);
 
             var compiler = new SqlServerCompiler();
             var dbFaverino = new QueryFactory(connectionFaverino, compiler);
@@ -38,7 +35,9 @@ namespace DataMartFasta
             dbDatamart.Logger = compiled => {
                 Debug.WriteLine(compiled.ToString());
             };
-            var dataWarehouse = new DataWarehouse(dbFaverino, dbDatamart);
+
+            // Sorry for the global variable! :D 
+            App.DataWarehouse = new DataWarehouse(dbFaverino, dbDatamart);
 
             var olapCube = new OlapCube();
             var window = new OlapCubeWindow(olapCube, dbDatamart);

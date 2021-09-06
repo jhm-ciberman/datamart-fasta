@@ -5,6 +5,7 @@ using Humanizer;
 using DataMartFasta.Definitions;
 using System.Collections.ObjectModel;
 using SqlKata;
+using System.Collections.Generic;
 
 namespace DataMartFasta.ViewModels
 {
@@ -17,7 +18,7 @@ namespace DataMartFasta.ViewModels
             this.column = definition;
         }
 
-        public void ApplyScope(Query query, string factTableName)
+        public void ApplyScope(Query query, List<FactDimensionViewModel> includedDimensions, string factTableName)
         {
             query.SelectRaw(this.column.Aggregate + "(" + factTableName + "." + this.column.Name + ") as " + this.BindingName);
         }

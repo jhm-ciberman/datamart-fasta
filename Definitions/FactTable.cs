@@ -1,4 +1,5 @@
 ﻿using FontAwesome.Sharp;
+using Humanizer;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -32,6 +33,7 @@ namespace DataMartFasta.Definitions
 
         public FactTable WithDimension(DimensionTable dimension, string foreignKeyName, string displayName = null, bool addDimensionNameToAttributes = false)
         {
+            displayName = displayName ?? foreignKeyName.Replace("_id", "").Humanize(LetterCasing.Title);
             this.dimensionsList.Add(new FactDimensionColumn(dimension, foreignKeyName, displayName, addDimensionNameToAttributes));
             return this;
         }

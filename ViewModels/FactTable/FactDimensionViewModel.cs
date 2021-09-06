@@ -16,12 +16,14 @@ namespace DataMartFasta.ViewModels
 
         public IconChar Icon => this.Column.DimensionTable.Icon;
 
-        public string DisplayName => this.Column.DimensionTable.DisplayName;
+        public string DisplayName => this.Column.DisplayName;
+
+        public string UniqueAliasName { get; }
 
         public FactDimensionViewModel(FactDimensionColumn column)
         {
             this.Column = column;
-
+            this.UniqueAliasName = this.Column.DimensionTable.TableName + "_" + Guid.NewGuid().ToString("N"); // Unique! 
 
             foreach (var attribute in column.DimensionTable.Attributes)
             {
@@ -33,10 +35,12 @@ namespace DataMartFasta.ViewModels
             }
         }
 
-        public void ApplyScope(Query query, string factTableName)
+        public void ApplyScope(Query query, List<FactDimensionViewModel> includedDimensions, string factTableName)
         {
+            includedDimensions.Add(this);
+
             var dimensionTable = this.Column.DimensionTable;
-            var tableAlias = dimensionTable.TableName + "_" + Guid.NewGuid().ToString("N"); // Unique! 
+            var tableAlias = this.UniqueAliasName;
             var foreignKey = factTableName + "." + this.Column.Name;
             var primaryKey = tableAlias + "." + dimensionTable.PrimaryKeyColumnName;
 
@@ -46,8 +50,8 @@ namespace DataMartFasta.ViewModels
             {
                 if (attribute.IsVisible)
                 {
-                    query.GroupBy(tableAlias + "." + attribute.Column.Name);
-                    query.Select(tableAlias + "." + attribute.Column.Name + " as " + attribute.BindingName);
+                    query.GroupBy(this.UniqueAliasName + "." + attribute.Column.Name);
+                    query.Select(this.UniqueAliasName + "." + attribute.Column.Name + " as " + attribute.BindingName);
                 }
             }
         }

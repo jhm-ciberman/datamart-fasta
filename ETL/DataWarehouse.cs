@@ -5,7 +5,7 @@ using System.Text;
 
 namespace DataMartFasta.ETL
 {
-    class DataWarehouse
+    internal class DataWarehouse
     {
         public DimDias DimDias { get; }
         public DimArticulos DimArticulos { get; }

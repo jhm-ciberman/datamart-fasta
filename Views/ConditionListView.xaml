@@ -1,0 +1,97 @@
+﻿<UserControl x:Class="DataMartFasta.Views.ConditionListView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
+             xmlns:local="clr-namespace:DataMartFasta.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800" d:Background="WhiteSmoke">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </UserControl.Resources>
+    <StackPanel DockPanel.Dock="Top" Margin="5">
+        <DataGrid 
+                DataContext="{Binding SelectedFactTable}"
+                ItemsSource="{Binding ConditionsList}" 
+                AutoGenerateColumns="False" CanUserAddRows="True" CanUserDeleteRows="True" 
+                IsReadOnly="False" MinHeight="50">
+            <DataGrid.Resources>
+                <FrameworkElement x:Key="ProxyElement" DataContext="{Binding}"/>
+            </DataGrid.Resources>
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Width="2*" Header="Dimensión">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <ComboBox 
+                                    Margin="3"
+                                    ItemsSource="{Binding DimensionsList}"
+                                    DisplayMemberPath="DisplayName"
+                                    SelectedItem="{Binding SelectedDimension, UpdateSourceTrigger=PropertyChanged}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Width="2*" Header="Atributo">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <ComboBox 
+                                    Margin="3"
+                                    ItemsSource="{Binding AttributesList}"
+                                    Visibility="{Binding HasSelectedDimension, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                    DisplayMemberPath="DisplayName"
+                                    SelectedItem="{Binding SelectedAttribute, UpdateSourceTrigger=PropertyChanged}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Width="*" Header="Operador">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <ComboBox 
+                                    Margin="3"
+                                    ItemsSource="{Binding OperatorsList}"
+                                    DisplayMemberPath="DisplayName"
+                                    SelectedItem="{Binding SelectedOperator, UpdateSourceTrigger=PropertyChanged}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <DataGridTemplateColumn Width="2*" Header="Filtro">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBox 
+                                Margin="3" 
+                                VerticalContentAlignment="Center"
+                                Text="{Binding FilterExpression, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                
+                <DataGridTemplateColumn Width="35" Header="Habilitada">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox 
+                                    Margin="3"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    IsChecked="{Binding ConditionIsEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                
+                <DataGridTemplateColumn Width="35">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Margin="3" Padding="5" ToolTip="Borrar condición" Command="{Binding RemoveItselfCommand}"  Validation.ErrorTemplate="{x:Null}">
+                                <fa:IconBlock Icon="TrashAlt"/>
+                            </Button>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                
+            </DataGrid.Columns>
+        </DataGrid>
+        
+        <Button Command="{Binding SelectedFactTable.AddConditionCommand}" Content="Agregar condición"/>
+        
+    </StackPanel>
+</UserControl>
