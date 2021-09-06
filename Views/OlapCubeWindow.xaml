@@ -25,8 +25,7 @@
                       ItemsSource="{Binding SelectedFactTable.DimensionsList}" 
                       Background="WhiteSmoke" 
                       MinWidth="200"
-                      MouseDoubleClick="TreeView_MouseDoubleClick"
-                      >
+                      MouseDoubleClick="TreeView_MouseDoubleClick">
                 <TreeView.ItemTemplate>
                     <HierarchicalDataTemplate DataType="FactDimensionViewModel" ItemsSource="{Binding Attributes}">
                         <StackPanel Orientation="Horizontal" Margin="5">
@@ -63,7 +62,16 @@
            
         </DockPanel>
         <DataGrid Name="dataGrid" ItemsSource="{Binding QueryResults}" IsReadOnly="True">
-            
+            <DataGrid.Resources>
+                <ContextMenu x:Key="HeaderContextMenu">
+                    <MenuItem Command="{Binding HideCommand}" Header="Ocultar columna"/>
+                </ContextMenu>
+            </DataGrid.Resources>
+            <DataGrid.ColumnHeaderStyle>
+                <Style TargetType="DataGridColumnHeader">
+                    <Setter Property="ContextMenu" Value="{StaticResource HeaderContextMenu}"/>
+                </Style>
+            </DataGrid.ColumnHeaderStyle>
         </DataGrid>
     </DockPanel>
 </Window>

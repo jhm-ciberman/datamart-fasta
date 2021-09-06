@@ -3,22 +3,23 @@ using Microsoft.Toolkit.Mvvm.Messaging;
 using Microsoft.Toolkit.Mvvm.Messaging.Messages;
 using Humanizer;
 using DataMartFasta.Definitions;
+using System.Collections.ObjectModel;
+using SqlKata;
 
 namespace DataMartFasta.ViewModels
 {
     public class FactMeasureViewModel : FactColumnViewModel
     {
-        /// <summary>
-        /// The SQL aggregate function used to get the results for this measure
-        /// </summary>
-        public string Aggregate = "sum";
+        private FactMeasureColumn column { get; }
 
-        public FactMeasureViewModel(ColumnDefinition definition) : base(definition)
+        public FactMeasureViewModel(FactMeasureColumn definition) : base(definition.DisplayName, definition.Name)
         {
+            this.column = definition;
         }
 
-        public FactMeasureViewModel(string columnName, string displayName = null) : base(columnName, displayName)
+        public void ApplyScope(Query query, string factTableName)
         {
+            query.SelectRaw(this.column.Aggregate + "(" + factTableName + "." + this.column.Name + ") as " + this.BindingName);
         }
     }
 }

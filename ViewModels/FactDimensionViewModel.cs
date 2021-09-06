@@ -1,4 +1,6 @@
 ﻿using DataMartFasta.Definitions;
+using FontAwesome.Sharp;
+using SqlKata;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -7,40 +9,46 @@ namespace DataMartFasta.ViewModels
 {
     public class FactDimensionViewModel
     {
-        public FactTableViewModel FactTable { get; }
-
-        private DimensionDefinition definition;
-
-        public string ForeignKeyColumnName { get; }
-
-        public string DisplayName { get; }
-
-        public FontAwesome.Sharp.IconChar Icon => this.definition.Icon;
+        public FactDimensionColumn Column { get; }
 
         public List<FactAttributeViewModel> attributes = new List<FactAttributeViewModel>();
         public IReadOnlyList<FactAttributeViewModel> Attributes => this.attributes;
 
-        public string PrimaryKeyColumnName => this.definition.PrimaryKeyColumnName;
+        public IconChar Icon => this.Column.DimensionTable.Icon;
 
-        public string TableName => this.definition.TableName;
+        public string DisplayName => this.Column.DimensionTable.DisplayName;
 
-        /// <summary>
-        /// The alias name that will be used in the joins statements.
-        /// </summary>
-        public string UniqueAliasName { get; }
-
-        public FactDimensionViewModel(FactTableViewModel factTable, DimensionDefinition definition, string foreignKeyColumnName, string displayName = null, bool addDimensionNameToAttributes = false)
+        public FactDimensionViewModel(FactDimensionColumn column)
         {
-            this.FactTable = factTable;
-            this.definition = definition;
-            this.ForeignKeyColumnName = foreignKeyColumnName;
-            this.DisplayName = displayName ?? definition.DisplayName;
-            this.UniqueAliasName = definition.TableName + "_" + Guid.NewGuid().ToString("N"); // Unique!
+            this.Column = column;
 
-            foreach (var attribute in definition.Attributes)
+
+            foreach (var attribute in column.DimensionTable.Attributes)
             {
-                var attributeDisplayName = addDimensionNameToAttributes ? $"{attribute.DisplayName} ({this.DisplayName})" : attribute.DisplayName;
-                this.attributes.Add(new FactAttributeViewModel(this, attribute.ColumnName, attributeDisplayName));
+                var displayName = column.AddDimensionNameToAttributes
+                    ? $"{attribute.DisplayName} ({this.Column.DisplayName})"
+                    : attribute.DisplayName;
+
+                this.attributes.Add(new FactAttributeViewModel(attribute, displayName));
+            }
+        }
+
+        public void ApplyScope(Query query, string factTableName)
+        {
+            var dimensionTable = this.Column.DimensionTable;
+            var tableAlias = dimensionTable.TableName + "_" + Guid.NewGuid().ToString("N"); // Unique! 
+            var foreignKey = factTableName + "." + this.Column.Name;
+            var primaryKey = tableAlias + "." + dimensionTable.PrimaryKeyColumnName;
+
+            query.Join(dimensionTable.TableName + " as " + tableAlias, foreignKey, primaryKey);
+
+            foreach (var attribute in this.Attributes)
+            {
+                if (attribute.IsVisible)
+                {
+                    query.GroupBy(tableAlias + "." + attribute.Column.Name);
+                    query.Select(tableAlias + "." + attribute.Column.Name + " as " + attribute.BindingName);
+                }
             }
         }
     }

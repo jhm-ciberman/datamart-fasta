@@ -1,4 +1,5 @@
-﻿using DataMartFasta.ETL;
+﻿using DataMartFasta.Definitions;
+using DataMartFasta.ETL;
 using DataMartFasta.Views;
 using SqlKata.Compilers;
 using SqlKata.Execution;
@@ -39,7 +40,8 @@ namespace DataMartFasta
             };
             var dataWarehouse = new DataWarehouse(dbFaverino, dbDatamart);
 
-            var window = new OlapCubeWindow(dbDatamart);
+            var olapCube = new OlapCube();
+            var window = new OlapCubeWindow(olapCube, dbDatamart);
             this.MainWindow = window;
             window.Show();
         }

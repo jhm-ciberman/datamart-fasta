@@ -8,16 +8,12 @@ namespace DataMartFasta.ViewModels
 {
     public class FactAttributeViewModel : FactColumnViewModel
     {
-        /// <summary>
-        /// The Fact Dimension asociated to this attribute
-        /// </summary>
-        public FactDimensionViewModel Dimension { get; }
+        public DimensionAttributeColumn Column { get; }
 
-
-        public FactAttributeViewModel(FactDimensionViewModel dimension, string columnName, string displayName = null)
-            : base(columnName, displayName)
+        public FactAttributeViewModel(DimensionAttributeColumn attributeColumn, string overrideDisplayName = null)
+            : base(overrideDisplayName ?? attributeColumn.DisplayName, attributeColumn.Name)
         {
-            this.Dimension = dimension;
+            this.Column = attributeColumn;
         }
     }
 }

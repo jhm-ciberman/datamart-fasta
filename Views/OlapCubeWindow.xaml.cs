@@ -1,19 +1,14 @@
-﻿using DataMartFasta.ETL;
+﻿using DataMartFasta.Definitions;
+using DataMartFasta.ETL;
 using DataMartFasta.ViewModels;
 using Microsoft.Toolkit.Mvvm.Messaging;
 using Microsoft.Toolkit.Mvvm.Messaging.Messages;
 using SqlKata.Execution;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace DataMartFasta.Views
 {
@@ -22,12 +17,12 @@ namespace DataMartFasta.Views
     /// </summary>
     public partial class OlapCubeWindow : Window, IRecipient<PropertyChangedMessage<bool>>, IRecipient<PropertyChangedMessage<FactTableViewModel>>
     {
-        internal OlapCubeWindow(QueryFactory dw)
+        internal OlapCubeWindow(OlapCube cube, QueryFactory dw)
         {
             InitializeComponent();
 
             WeakReferenceMessenger.Default.RegisterAll(this);
-            this.DataContext = new OlapCubeViewModel(dw);
+            this.DataContext = new OlapCubeViewModel(cube, dw);
         }
 
         public OlapCubeViewModel ViewModel => (OlapCubeViewModel)this.DataContext;
@@ -57,9 +52,8 @@ namespace DataMartFasta.Views
             {
                 var dataGridColumn = new DataGridTextColumn()
                 {
-                    Header = factColumn.DisplayName,
-                    Binding = new Binding(factColumn.UniqueAliasName) { Mode = BindingMode.OneTime },
-                    
+                    Binding = new Binding(factColumn.BindingName) { Mode = BindingMode.OneTime },
+                    Header = factColumn,
                 };
                 this.columns.Add(factColumn, dataGridColumn);
                 this.dataGrid.Columns.Add(dataGridColumn);

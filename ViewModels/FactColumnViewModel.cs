@@ -1,6 +1,7 @@
 ﻿using DataMartFasta.Definitions;
 using Humanizer;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
+using Microsoft.Toolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -9,17 +10,6 @@ namespace DataMartFasta.ViewModels
 {
     public class FactColumnViewModel : ObservableRecipient
     {
-        /// <summary>
-        /// The name of the measure column in the database
-        /// </summary>
-        public string ColumnName { get; }
-
-        /// <summary>
-        /// The friendly name that is shown to the user
-        /// </summary>
-        public string DisplayName { get; }
-
-
         private bool isVisible = false;
 
         /// <summary>
@@ -28,22 +18,38 @@ namespace DataMartFasta.ViewModels
         public bool IsVisible { get => this.isVisible; set => this.SetProperty(ref this.isVisible, value, broadcast: true); }
 
         /// <summary>
-        /// The alias name that will be used in the select statement. Example: "sum(ColumnName) as UniqueAliasName"
+        /// Hides the column
         /// </summary>
-        public string UniqueAliasName { get; }
+        public IRelayCommand HideCommand { get; }
 
-        public FactColumnViewModel(ColumnDefinition definition)
+        /// <summary>
+        /// The column friendly name to show to the user
+        /// </summary>
+        public string DisplayName { get; }
+
+        /// <summary>
+        /// The alias name that will be used in the select statement. Example: "sum(ColumnName) as UniqueAliasName".
+        /// This alias name must be guaranteed to be unique. Normally you wouldn't set this value manually. 
+        /// It will be constructed based on the column's name and a Guid. 
+        /// </summary>
+        public string BindingName { get; }
+
+
+        public FactColumnViewModel(string displayName, string columnName)
         {
-            this.ColumnName = definition.ColumnName;
-            this.DisplayName = definition.DisplayName;
-            this.UniqueAliasName = definition.ColumnName + "_" + Guid.NewGuid().ToString("N"); // Unique!
+            this.DisplayName = displayName;
+            this.BindingName = columnName + "_" + Guid.NewGuid().ToString("N"); // Unique!
+            this.HideCommand = new RelayCommand(this.Hide);
         }
 
-        public FactColumnViewModel(string columnName, string displayName = null)
+        private void Hide()
         {
-            this.ColumnName = columnName;
-            this.DisplayName = displayName ?? columnName.Humanize();
-            this.UniqueAliasName = columnName + "_" + Guid.NewGuid().ToString("N"); // Unique!
+            this.IsVisible = false;
+        }
+
+        public override string ToString()
+        {
+            return this.DisplayName;
         }
     }
 }

@@ -1,46 +1,69 @@
 ﻿using DataMartFasta.Definitions;
 using Humanizer;
 using Microsoft.Toolkit.Mvvm.Input;
+using SqlKata.Execution;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace DataMartFasta.ViewModels
 {
     public class FactTableViewModel
     {
-        public string DisplayName { get; }
-        public string TableName { get; }
+        private FactTable table;
 
-        private List<FactDimensionViewModel> dimensionsList = new List<FactDimensionViewModel>();
-        public IReadOnlyList<FactDimensionViewModel> DimensionsList => this.dimensionsList;
+        public List<FactMeasureViewModel> MeasuresList { get; } = new List<FactMeasureViewModel>();
 
-        private List<FactMeasureViewModel> measuresList = new List<FactMeasureViewModel>();
-        public IReadOnlyList<FactMeasureViewModel> MeasuresList => this.measuresList;
+        public List<FactDimensionViewModel> DimensionsList { get; } = new List<FactDimensionViewModel>();
 
-        public IRelayCommand AddAttributeCommand { get; }
-
-        public FactTableViewModel(string tableName, string displayName = null)
+        public FactTableViewModel(FactTable table)
         {
-            this.TableName = tableName;
-            this.DisplayName = displayName ?? tableName.Humanize();
-        }
+            this.table = table;
 
-        public FactTableViewModel WithDimension(DimensionDefinition dimension, string foreignKeyName, string displayName = null, bool addDimensionNameToAttributes = false)
-        {
-            this.dimensionsList.Add(new FactDimensionViewModel(this, dimension, foreignKeyName, displayName, addDimensionNameToAttributes));
-            return this;
-        }
+            foreach (var measure in this.table.MeasuresList)
+            {
+                this.MeasuresList.Add(new FactMeasureViewModel(measure));
+            }
 
-        public FactTableViewModel WithMeasure(string columnName, string displayName = null)
-        {
-            this.measuresList.Add(new FactMeasureViewModel(columnName, displayName));
-            return this;
+            foreach (var dimension in this.table.DimensionsList)
+            {
+                this.DimensionsList.Add(new FactDimensionViewModel(dimension));
+            }
         }
 
         public override string ToString()
         {
-            return this.DisplayName;
+            return this.table.DisplayName;
+        }
+
+
+        public IEnumerable<dynamic> PerformQuery(QueryFactory queryFactory)
+        {
+            var query = queryFactory.Query(this.table.TableName);
+
+
+            var visibleDimensions = this.DimensionsList.Where(dim => dim.Attributes.Any(attr => attr.IsVisible));
+            var visibleMeasures = this.MeasuresList.Where(measure => measure.IsVisible);
+
+            if (!visibleDimensions.Any() && !visibleMeasures.Any())
+            {
+                return new dynamic[0];
+            }
+
+            var factTableName = this.table.TableName;
+
+            foreach (var dimension in visibleDimensions)
+            {
+                dimension.ApplyScope(query, factTableName);
+            }
+
+            foreach (var measure in visibleMeasures)
+            {
+                measure.ApplyScope(query, factTableName);
+            }
+
+            return query.Get();
         }
     }
 }
